@@ -1,25 +1,52 @@
-import logo from './logo.svg';
+import React from 'react';
+import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
+import useStore from './store/store';
 import './App.css';
+import AuthPage from "./pages/AuthPage";
+import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
+import {Bounce, ToastContainer} from "react-toastify";
+
+// Protected Route component
+const ProtectedRoute = ({children}) => {
+    if (!(localStorage.getItem("token"))) {
+        return <Navigate to="/auth#login" replace/>;
+    }
+
+    return children;
+};
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <Router>
+            <div className="App">
+                <Routes>
+                    <Route path={"/auth"} element={<AuthPage/>}/>
+                    <Route path="/" element={
+                        <ProtectedRoute>
+                            <HomePage/>
+                        </ProtectedRoute>}
+                    />
+
+                    {/* 404 Route */}
+                    <Route path="*" element={<NotFoundPage/>}/>
+                </Routes>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick={false}
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                    transition={Bounce}
+                />
+            </div>
+        </Router>
+    );
 }
 
 export default App;

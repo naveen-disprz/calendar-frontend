@@ -1,0 +1,78 @@
+// src/components/homePage/Header.module.sass
+@use "../../styles/variables" as *
+
+.header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 1rem 2rem
+  background-color: $background-color
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+
+.projectName
+  color: $primary
+  font-weight: bold
+
+.actions
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 2rem
+
+.toggleButton
+  background: none
+  border: none
+  cursor: pointer
+
+.profile
+  position: relative
+
+.profileCircle
+  width: 38px
+  height: 38px
+  border-radius: 200%
+  background-color: #c6c3ff
+  color: $primary
+  font-weight: 600
+  display: flex
+  align-items: center
+  justify-content: center
+  font-size: 1.1rem
+  margin-right: 0.5rem
+
+.profileButton
+  display: flex
+  align-items: center
+  background: none
+  border: none
+  cursor: pointer
+
+.username
+  font-size: 1rem
+
+.dropdown
+  position: absolute
+  top: 150%
+  right: 0
+  background-color: #fff
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+  overflow: hidden
+  z-index: 10
+  border-radius: 10px
+
+.logoutButton
+  padding: 1rem
+  display: flex
+  color: red
+  align-items: center
+  gap: 0.5rem
+  width: 100%
+  background: none
+  border: $border 1px solid
+  border-radius: 10px
+  cursor: pointer
+  text-align: left
+  font-size: 1rem
+
+  &:hover
+    background-color: #f4f4f9

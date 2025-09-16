@@ -1,0 +1,203 @@
+@use "../styles/variables" as *
+
+.page
+  min-height: 100vh
+  background-color: rgb(237, 237, 255)
+  display: flex
+  flex-direction: row
+
+/* LEFT SECTION - refreshed visuals */
+.leftSection
+  width: 50vw
+  color: #fff
+  display: grid
+  place-items: center
+  position: relative
+  overflow: hidden
+  // Layered gradients + subtle pattern
+  background: radial-gradient(1000px 700px at -10% -10%, rgba(255, 255, 255, .10) 0%, rgba(255, 255, 255, 0) 60%), radial-gradient(800px 600px at 110% 110%, rgba(255, 255, 255, .10) 0%, rgba(255, 255, 255, 0) 60%), linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #1d4ed8 100%)
+
+  // soft glow blobs
+  &::before
+    content: ''
+    position: absolute
+    width: 520px
+    height: 520px
+    top: -140px
+    left: -140px
+    background: radial-gradient(closest-side, rgba(255, 255, 255, .25), rgba(255, 255, 255, 0))
+    filter: blur(12px)
+    pointer-events: none
+
+  &::after
+    content: ''
+    position: absolute
+    width: 520px
+    height: 520px
+    right: -140px
+    bottom: -140px
+    background: radial-gradient(closest-side, rgba(59, 130, 246, .45), rgba(59, 130, 246, 0))
+    filter: blur(18px)
+    pointer-events: none
+
+.leftContent
+  position: relative
+  z-index: 1
+  text-align: center
+  max-width: 34rem
+  display: flex
+  flex-direction: column
+  gap: 1.25rem
+  align-items: center
+
+.logoRow
+  display: flex
+  align-items: center
+  gap: .75rem
+
+.logoMark
+  width: 40px
+  height: 40px
+  display: grid
+  place-items: center
+  border-radius: 10px
+  background: rgba(255, 255, 255, .18)
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25)
+  font-size: 1.1rem
+
+.brand
+  font-size: 2rem
+  font-weight: 800
+  margin: 0
+  letter-spacing: .2px
+  background: linear-gradient(90deg, #ffffff 0%, #e0e7ff 100%)
+  -webkit-background-clip: text
+  background-clip: text
+  color: transparent
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .15)
+
+.tagline
+  font-size: 1.125rem
+  margin: 0
+  opacity: .95
+
+.featureList
+  list-style: none
+  padding: 0
+  margin: .25rem 0 0 0
+  display: grid
+  grid-template-columns: 1fr
+  gap: .6rem
+  width: 100%
+
+  li
+    display: flex
+    align-items: center
+    gap: .6rem
+    padding: .65rem .8rem
+    border-radius: 12px
+    background: rgba(255, 255, 255, .12)
+    border: 1px solid rgba(255, 255, 255, .22)
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .12)
+    font-weight: 500
+
+.featureIcon
+  display: inline-flex
+  width: 26px
+  height: 26px
+  border-radius: 50%
+  align-items: center
+  justify-content: center
+  background: rgba(255, 255, 255, .2)
+  color: #fff
+
+// Decorative "preview calendar" card
+.mockCard
+  width: min(420px, 88%)
+  border-radius: 18px
+  padding: 1rem
+  margin-top: .5rem
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .12))
+  border: 1px solid rgba(255, 255, 255, .28)
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .22)
+  backdrop-filter: blur(6px)
+  -webkit-backdrop-filter: blur(6px)
+
+.mockHeader
+  display: flex
+  align-items: center
+  gap: .5rem
+  justify-content: space-between
+  margin-bottom: .75rem
+
+.month
+  margin-left: auto
+  font-weight: 700
+  letter-spacing: .3px
+
+.pill
+  width: 10px
+  height: 10px
+  border-radius: 999px
+  background: rgba(255, 255, 255, .6)
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .18)
+
+  &:nth-child(1)
+    background: #34d399
+
+  &:nth-child(2)
+    background: #60a5fa
+
+  &:nth-child(3)
+    background: #f472b6
+
+.mockGrid
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  gap: 6px
+
+.day
+  aspect-ratio: 1 / 1
+  width: 100%
+  border-radius: 10px
+  background: rgba(255, 255, 255, .14)
+  border: 1px solid rgba(255, 255, 255, .22)
+  position: relative
+  overflow: hidden
+
+  &::after
+    content: ''
+    position: absolute
+    bottom: 6px
+    left: 50%
+    transform: translateX(-50%)
+    width: 6px
+    height: 6px
+    border-radius: 50%
+    background: rgba(255, 255, 255, .7)
+
+.busy
+  background: rgba(99, 102, 241, .45)
+  border-color: rgba(99, 102, 241, .65)
+
+  &::after
+    background: #fef08a
+
+/* RIGHT SECTION (unchanged baseline with polish) */
+.rightSection
+  background-color: $background-color
+  display: grid
+  place-items: center
+  height: 100vh
+  width: 50vw
+
+// Responsive
+@media (max-width: 900px)
+  .page
+    background-color: #fff
+
+  .leftSection
+    display: none
+
+  .rightSection
+    width: 100vw
