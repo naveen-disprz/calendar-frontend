@@ -8,9 +8,9 @@ const namespacedSet = (set, key) => (partial) =>
         [key]: { ...state[key], ...partial },
     }))
 
-const useStore = create((set) => ({
-    settings: settingsSlice(namespacedSet(set, 'settings')),
-    appointments: appointmentsSlice(namespacedSet(set, 'appointments')),
+const useStore = create((set, get) => ({
+    settings: settingsSlice(namespacedSet(set, 'settings'), get),
+    appointments: appointmentsSlice(namespacedSet(set, 'appointments'), get),
 }))
 
 export default useStore

@@ -1,0 +1,90 @@
+@use "../../styles/variables" as *
+
+.item
+  position: relative
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+  gap: 0.75rem
+  padding: 0.75rem
+  border-radius: 8px
+  overflow: clip
+  background: #fafafa
+  border: 1px solid $border
+  transition: background 0.2s
+  &:hover
+    background: #f5f5f5
+
+.main
+  display: flex
+  flex-direction: column
+  align-items: flex-start
+
+.coloredBlock
+  position: absolute
+  height: 110%
+  top: -10%
+  width: 4px
+  left: 0
+
+.time
+  font-weight: 600
+  font-size: 0.9rem
+  min-width: 4rem
+  color: #333
+
+.details
+  display: flex
+  flex-direction: column
+  flex: 1
+
+.title
+  font-weight: 500
+  font-size: 0.95rem
+  color: #222
+  margin-bottom: 0.25rem
+
+.meta
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  font-size: 0.8rem
+  color: #666
+
+.type
+  display: flex
+  align-items: center
+  gap: 0.35rem
+
+.typeDot
+  width: 8px
+  height: 8px
+  border-radius: 50%
+
+.location
+  font-size: 0.8rem
+  color: #777
+
+.organizer
+  font-size: 0.75rem
+  color: #999
+  margin-top: 0.25rem
+
+.status
+  font-size: 0.75rem
+  font-weight: 600
+  padding: 0.2rem 0.5rem
+  border-radius: 12px
+  align-self: flex-start
+
+.upcoming
+  background: #e3f2fd
+  color: #1976d2
+
+.ongoing
+  background: #e8f5e9
+  color: #2e7d32
+
+.completed
+  background: #f5f5f5
+  color: #757575

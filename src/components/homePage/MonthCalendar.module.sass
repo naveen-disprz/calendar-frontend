@@ -1,0 +1,63 @@
+.monthCalendar
+  display: flex
+  flex-direction: column
+  height: calc(100vh - 145px)
+
+.weekdays
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  font-weight: 600
+  padding: 0.5rem 0
+  text-align: center
+  border-bottom: 1px solid #ddd
+  background: #f9f9f9
+
+.weekday
+  padding: 0.25rem
+
+.daysGrid
+  flex: 1
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  grid-auto-rows: minmax(100px, auto)
+  border-left: 1px solid #eee
+  border-top: 1px solid #eee
+
+.dayCell
+  border-right: 1px solid #eee
+  border-bottom: 1px solid #eee
+  padding: 4px
+  display: flex
+  flex-direction: column
+
+.dateNumber
+  font-size: 0.85rem
+  font-weight: 500
+  margin-bottom: 2px
+
+.today
+  background: #e3f2fd
+
+.outsideMonth
+  color: #aaa
+  background: #fafafa
+
+.events
+  display: flex
+  flex-direction: column
+  gap: 2px
+  margin-top: 4px
+
+.event
+  font-size: 0.75rem
+  padding: 2px 4px
+  border-radius: 4px
+  color: white
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.more
+  font-size: 0.7rem
+  color: #1976d2
+  margin-top: 2px

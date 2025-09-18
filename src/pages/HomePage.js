@@ -13,11 +13,39 @@ import {IoIosAdd} from "react-icons/io";
 
 import CustomButton from "../components/common/CustomButton";
 import moment from "moment";
-import DayCalendar from "../components/homePage/DayCalendar";
+import DayCalendar from "../components/homePage/Calendar";
+import CreateAppointmentModal from "../components/homePage/CreateAppointmentModal";
+import appointmentAPI from "../api/appointmentAPI";
+import attendeeAPI from "../api/attendeeAPI";
 
 
 const HomePage = () => {
-    const {setField, selectedFrequency, selectedFromDate, selectedToDate} = useStore(state => state.appointments);
+    const {setField, selectedFrequency, selectedFromDate, selectedToDate, loadAppointmentsFromDB} = useStore(state => state.appointments);
+    const [isCreateAppointmentModalVisible, setIsCreateAppointmentModalVisible] = useState(false)
+
+    useEffect(() => {
+        appointmentAPI.getAppointments(moment().startOf("day").utc().toISOString(), moment().endOf("day").utc().toISOString()).then((response) => {
+            const localAppointments = response.data.map(appointment => {
+                return {
+                    ...appointment,
+                    startDateTime: moment.utc(appointment.startDateTime).local().toISOString(),
+                    endDateTime: moment.utc(appointment.endDateTime).local().toISOString(),
+                }
+            })
+            setField("todayAppointments", localAppointments)
+        })
+        appointmentAPI.getAppointmentTypes().then((response) => {
+            setField("appointmentTypes", response.data)
+        })
+        attendeeAPI.getAllAttendees().then((response) => {
+            setField("allAttendees", response.data)
+        })
+    }, [setField]);
+    
+
+    useEffect(() => {
+        loadAppointmentsFromDB();
+    }, [loadAppointmentsFromDB, selectedFromDate, selectedToDate, setField]);
 
     useEffect(() => {
         const today = moment();
@@ -62,6 +90,14 @@ const HomePage = () => {
 
     return (
         <div className={styles.container}>
+            {isCreateAppointmentModalVisible ? (
+                <CreateAppointmentModal
+                    open={isCreateAppointmentModalVisible}
+                    onClose={() => setIsCreateAppointmentModalVisible(false)}
+                    onSave={() => {
+                        setIsCreateAppointmentModalVisible(false);
+                    }}
+                />) : null}
             <SideBar/>
             <div className={styles.content}>
                 <Header/>
@@ -96,12 +132,15 @@ const HomePage = () => {
                             </button>
                         </div>
                         <button className={styles.createAppointmentButton} onClick={() => {
+                            setIsCreateAppointmentModalVisible(true);
                         }}>
                             <IoIosAdd color={"white"} size={25}/>
                             <p style={{color: "white"}}>Create Appointment</p>
                         </button>
                     </div>
-                    <DayCalendar/>
+                    <div style={{flex: 1, overflowY: "auto"}}>
+                        <DayCalendar variant={selectedFrequency === "daily" ? "day" : "week"}/>
+                    </div>
                 </div>
             </div>
         </div>

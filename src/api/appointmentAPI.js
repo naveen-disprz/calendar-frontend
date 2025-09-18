@@ -1,4 +1,3 @@
-import axios from 'axios'
 import api from "./axiosInitiator";
 
 // API endpoints
@@ -13,29 +12,30 @@ const ENDPOINTS = {
 // Authentication API functions
 export const authAPI = {
     // User login
-    login: async (credentials) => {
-        const response = await api.post(ENDPOINTS.LOGIN, credentials)
-
-        // Store token in localStorage
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token)
-            localStorage.setItem('user', JSON.stringify(response.data.user))
+    getAppointments: async (fromDate, toDate, appointmentTypeId, isRecurring) => {
+        let url = ENDPOINTS.getAppointments + `?fromDate=${fromDate}&toDate=${toDate}&includeRecurring=true`;
+        if (appointmentTypeId) {
+            url += `&appointmentTypeId=${appointmentTypeId}`;
         }
-
-        return response
-    },
-
-    // User signup
-    signup: async (userData) => {
-        const response = await api.post(ENDPOINTS.SIGNUP, userData)
-
-        // Store token if provided (auto-login after signup)
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token)
+        if (isRecurring) {
+            url += `&isRecurring=${isRecurring}`;
         }
-
-        return response
+        return await api.get(url)
     },
+    addAppointment: async (appointment) => {
+        return await api.post(ENDPOINTS.add, appointment)
+    },
+    deleteAppointment: async (appointmentId) => {
+        return await api.delete(ENDPOINTS.delete + `/${appointmentId}`)
+    },
+    getAppointmentTypes: async () => {
+        return await api.get(ENDPOINTS.getTypes)
+    },
+    editAppointment: async (appointmentId, appointment) => {
+        let url = ENDPOINTS.edit + `/${appointmentId}`;
+
+        return await api.put(url, appointment)
+    }
 }
 
 export default authAPI

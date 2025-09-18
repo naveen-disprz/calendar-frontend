@@ -1,0 +1,25 @@
+@use "../../styles/variables" as *
+
+.toggleSwitch
+  width: 47px
+  height: 28px
+  background: #ddd
+  border-radius: 200px
+  position: relative
+  //cursor: pointer
+  transition: background 0.3s
+
+.toggleKnob
+  width: 18px
+  height: 18px
+  background: white
+  border-radius: 500px
+  position: absolute
+  top: 5px
+  left: 4px
+  transition: left 0.3s
+
+.enabled
+  background: $primary
+  .toggleKnob
+    left: 24px
