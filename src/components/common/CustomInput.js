@@ -78,6 +78,10 @@ const CustomInput = ({
                         {open && (
                             <div className={styles.dropdownCalendar}>
                                 <DayPicker
+                                    disabled={{
+                                        before: minDate,
+                                        after: maxDate,
+                                    }}
                                     mode="single"
                                     selected={value}
                                     onSelect={(day) => {
@@ -119,6 +123,10 @@ const CustomInput = ({
                             <div className={styles.dropdownCalendar}>
                                 <DayPicker
                                     mode="single"
+                                    disabled={{
+                                        before: minDate,
+                                        after: maxDate,
+                                    }}
                                     selected={value}
                                     onSelect={(day) => {
                                         if (!day) {

@@ -4,13 +4,14 @@ import moment from "moment";
 import useStore from "../../store/store";
 import DayAppointmentItem from "./DayAppointmentItem";
 import MonthCalendar from "./MonthCalendar";
+import CreateAppointmentModal from "./CreateAppointmentModal";
 
-const Calendar = ({variant = "day", selectedDate = new Date()}) => {
-    if (variant === "month") {
-        return <MonthCalendar selectedDate={selectedDate} />;
-    }
+const Calendar = ({variant = "day"}) => {
     const halfHours = Array.from({length: 49}, (_, i) => i * 30);
     const [nowLineTop, setNowLineTop] = useState(29);
+    const [isCreateAppointmentModalVisible, setIsCreateAppointmentModalVisible] = useState(false)
+    const [selectedBlockDate, setSelectedBlockDate] = useState(null)
+
 
     const {fetchedAppointments, selectedFromDate, selectedToDate} = useStore(
         (state) => state.appointments
@@ -26,6 +27,10 @@ const Calendar = ({variant = "day", selectedDate = new Date()}) => {
 
         return () => clearInterval(interval);
     }, []);
+
+    if (variant === "month") {
+        return <MonthCalendar selectedDate={selectedFromDate}/>;
+    }
 
     // Render appointments (different for day vs week)
     const renderEvents = () => {
@@ -53,8 +58,8 @@ const Calendar = ({variant = "day", selectedDate = new Date()}) => {
                         return (
                             <div className={styles.weekColumn} key={dayIndex}>
                                 <div className={styles.weekHeader}>
-                                    <p>{day.format("ddd")}</p>
-                                    <span>{day.format("D")}</span>
+                                    <p style={day.isSame(moment(),"day") ? {color:"#4f46e5"} : {}}>{day.format("ddd")}</p>
+                                    <span style={day.isSame(moment(),"day") ? {color: "#4f46e5"} : {}}>{day.format("D")}</span>
                                 </div>
                                 {dayEvents.map((event, idx) => (
                                     <DayAppointmentItem
@@ -78,6 +83,11 @@ const Calendar = ({variant = "day", selectedDate = new Date()}) => {
                 variant === "week" ? styles.weekCalendar : styles.dayCalendar
             }`}
         >
+            {isCreateAppointmentModalVisible ? <CreateAppointmentModal defaultDate={selectedBlockDate}
+                                                                       onClose={() => setIsCreateAppointmentModalVisible(false)}
+                                     onSave={() => setIsCreateAppointmentModalVisible(false)}
+                                     open={isCreateAppointmentModalVisible}/> : null}
+
             {/* Red Now Line */}
             <div className={styles.nowLine} style={variant === "day" ? {top: nowLineTop} : {top: nowLineTop + 23}}>
                 <div
@@ -102,11 +112,14 @@ const Calendar = ({variant = "day", selectedDate = new Date()}) => {
 
             {/* Time Grid */}
             {halfHours.map((minutes, index) => {
-                const time = moment(selectedDate).startOf("day").add(minutes, "minutes");
+                const time = moment(selectedFromDate).startOf("day").add(minutes, "minutes");
                 const isHour = minutes % 60 === 0;
 
                 return (
-                    <div key={index} className={styles.halfHourBlock}>
+                    <div key={index} className={styles.halfHourBlock} onClick={() => {
+                        setSelectedBlockDate(time)
+                        setIsCreateAppointmentModalVisible(true)
+                    }}>
                         <div className={styles.timeLabel}>
                             {minutes === 1440 ? "" : time.format("h:mm A")}
                         </div>

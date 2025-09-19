@@ -19,24 +19,26 @@
   flex: 1
   display: grid
   grid-template-columns: repeat(7, 1fr)
-  grid-auto-rows: minmax(100px, auto)
+  /* gridTemplateRows is set dynamically via inline style from React */
   border-left: 1px solid #eee
   border-top: 1px solid #eee
+  overflow: hidden
 
 .dayCell
   border-right: 1px solid #eee
   border-bottom: 1px solid #eee
-  padding: 4px
+  padding: 6px
   display: flex
   flex-direction: column
+  min-height: 0
 
 .dateNumber
   font-size: 0.85rem
   font-weight: 500
-  margin-bottom: 2px
+  margin-bottom: 4px
 
 .today
-  background: #e3f2fd
+  background: #eaf4ff
 
 .outsideMonth
   color: #aaa
@@ -45,12 +47,14 @@
 .events
   display: flex
   flex-direction: column
-  gap: 2px
+  gap: 4px
   margin-top: 4px
+  overflow: hidden
 
 .event
+  cursor: pointer
   font-size: 0.75rem
-  padding: 2px 4px
+  padding: 4px 6px
   border-radius: 4px
   color: white
   white-space: nowrap
@@ -61,3 +65,8 @@
   font-size: 0.7rem
   color: #1976d2
   margin-top: 2px
+  cursor: pointer
+
+.pastDay
+  opacity: 0.5
+  pointer-events: none

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from './HomePage.module.sass';
-import {IoIosArrowForward} from "react-icons/io";
+import {IoIosArrowForward, IoMdRefresh} from "react-icons/io";
 import {IoIosArrowBack} from "react-icons/io";
 import {FaListUl} from "react-icons/fa6";
 import {HiViewGrid} from "react-icons/hi";
@@ -17,23 +17,21 @@ import DayCalendar from "../components/homePage/Calendar";
 import CreateAppointmentModal from "../components/homePage/CreateAppointmentModal";
 import appointmentAPI from "../api/appointmentAPI";
 import attendeeAPI from "../api/attendeeAPI";
+import {DayPicker} from "react-day-picker";
 
 
 const HomePage = () => {
-    const {setField, selectedFrequency, selectedFromDate, selectedToDate, loadAppointmentsFromDB} = useStore(state => state.appointments);
+    const {
+        setField,
+        selectedFrequency,
+        selectedFromDate,
+        selectedToDate,
+        loadAppointmentsFromDB
+    } = useStore(state => state.appointments);
     const [isCreateAppointmentModalVisible, setIsCreateAppointmentModalVisible] = useState(false)
+    const [isDropdownCalendarOpen, setIsDropdownCalendarOpen] = useState(false);
 
     useEffect(() => {
-        appointmentAPI.getAppointments(moment().startOf("day").utc().toISOString(), moment().endOf("day").utc().toISOString()).then((response) => {
-            const localAppointments = response.data.map(appointment => {
-                return {
-                    ...appointment,
-                    startDateTime: moment.utc(appointment.startDateTime).local().toISOString(),
-                    endDateTime: moment.utc(appointment.endDateTime).local().toISOString(),
-                }
-            })
-            setField("todayAppointments", localAppointments)
-        })
         appointmentAPI.getAppointmentTypes().then((response) => {
             setField("appointmentTypes", response.data)
         })
@@ -41,11 +39,11 @@ const HomePage = () => {
             setField("allAttendees", response.data)
         })
     }, [setField]);
-    
+
 
     useEffect(() => {
         loadAppointmentsFromDB();
-    }, [loadAppointmentsFromDB, selectedFromDate, selectedToDate, setField]);
+    }, [loadAppointmentsFromDB, selectedFromDate]);
 
     useEffect(() => {
         const today = moment();
@@ -74,6 +72,19 @@ const HomePage = () => {
             setField("selectedToDate", selectedToDate.clone().add(1, 'months'));
         }
     };
+
+    const resetDate = () => {
+        if (selectedFrequency === 'daily') {
+            setField("selectedFromDate", moment());
+            setField("selectedToDate", moment());
+        } else if (selectedFrequency === 'weekly') {
+            setField("selectedFromDate", moment().startOf("week"));
+            setField("selectedToDate", moment().endOf("week"));
+        } else if (selectedFrequency === 'monthly') {
+            setField("selectedFromDate", moment().startOf("month"));
+            setField("selectedToDate", moment().endOf("month"));
+        }
+    }
 
     const handleBackwardDateChange = () => {
         if (selectedFrequency === 'daily') {
@@ -120,16 +131,38 @@ const HomePage = () => {
                                 <p>Month</p>
                             </button>
                         </div>
-                        <div className={styles.dateSelectorDiv}>
-                            <button className={styles.dateSelectorButton} onClick={handleBackwardDateChange}>
-                                <IoIosArrowBack size={19}/>
-                            </button>
-                            <p className={styles.dateText}>
-                                {selectedFrequency === "daily" ? selectedFromDate.format("DD MMM YYYY") : selectedFrequency === "weekly" ? selectedFromDate.format("DD MMM YYYY") + " - " + selectedToDate.format("DD MMM YYYY") : selectedFromDate.format("MMMM YYYY")}
-                            </p>
-                            <button className={styles.dateSelectorButton} onClick={handleForwardDateChange}>
-                                <IoIosArrowForward size={19}/>
-                            </button>
+                        <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+                            <div className={styles.dateSelectorDiv}>
+                                <button className={styles.dateSelectorButton} onClick={handleBackwardDateChange}>
+                                    <IoIosArrowBack size={19}/>
+                                </button>
+                                <div className={styles.dateWrapper}>
+                                    <p className={styles.dateText} onClick={() => {
+                                        setIsDropdownCalendarOpen(prev => !prev);
+                                    }}>
+                                        {isDropdownCalendarOpen && (
+                                            <div className={styles.dropdownCalendar}>
+                                                <DayPicker
+                                                    mode="single"
+                                                    selected={selectedFromDate}
+                                                    onSelect={(day) => {
+                                                        if (day === null) return;
+                                                        setField("selectedFromDate", moment(day).clone());
+                                                        setField("selectedToDate", moment(day).clone());
+                                                        setIsDropdownCalendarOpen(false);
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        {selectedFrequency === "daily" ? selectedFromDate.format("DD MMM YYYY") : selectedFrequency === "weekly" ? selectedFromDate.format("DD MMM YYYY") + " - " + selectedToDate.format("DD MMM YYYY") : selectedFromDate.format("MMMM YYYY")}
+                                    </p>
+                                </div>
+                                <button className={styles.dateSelectorButton} onClick={handleForwardDateChange}>
+                                    <IoIosArrowForward size={19}/>
+                                </button>
+                            </div>
+                            <IoMdRefresh size={20} style={{cursor: "pointer"}} onClick={resetDate}/>
+
                         </div>
                         <button className={styles.createAppointmentButton} onClick={() => {
                             setIsCreateAppointmentModalVisible(true);
@@ -139,12 +172,14 @@ const HomePage = () => {
                         </button>
                     </div>
                     <div style={{flex: 1, overflowY: "auto"}}>
-                        <DayCalendar variant={selectedFrequency === "daily" ? "day" : "week"}/>
+                        <DayCalendar
+                            variant={selectedFrequency === "daily" ? "day" : selectedFrequency === "weekly" ? "week" : "month"}/>
                     </div>
                 </div>
             </div>
         </div>
-    );
+    )
+        ;
 };
 
 export default HomePage;

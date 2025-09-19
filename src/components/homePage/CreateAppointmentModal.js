@@ -18,7 +18,7 @@ import {useAuth} from "../../hooks/useAuth";
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const daysOfMonth = Array.from({length: 31}, (_, i) => i + 1);
 
-const CreateAppointmentModal = ({open, onClose, onSave, appointment}) => {
+const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate}) => {
     const {appointmentTypes, allAttendees} = useStore(
         (state) => state.appointments
     );
@@ -33,8 +33,8 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment}) => {
     const [location, setLocation] = useState("");
     const [appointmentType, setAppointmentType] = useState(null);
     const [participants, setParticipants] = useState([]);
-    const [startDateTime, setStartDateTime] = useState(moment());
-    const [endDateTime, setEndDateTime] = useState(null);
+    const [startDateTime, setStartDateTime] = useState(moment(defaultDate));
+    const [endDateTime, setEndDateTime] = useState(defaultDate ? moment(defaultDate) : null);
 
     const [isRecurring, setIsRecurring] = useState(false);
     const [frequency, setFrequency] = useState("DAILY");
@@ -80,8 +80,8 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment}) => {
             setLocation("");
             setAppointmentType(null);
             setParticipants([]);
-            setStartDateTime(moment());
-            setEndDateTime(null);
+            setStartDateTime(moment(defaultDate));
+            setEndDateTime(defaultDate ? moment(defaultDate) : null);
             setIsRecurring(false);
             setFrequency("DAILY");
             setDaysOfWeekSelected([]);
@@ -328,6 +328,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment}) => {
                         label={"From Date & Time"}
                         type="datetime"
                         placeholder={"Select appointment start date"}
+                        maxDate={endDateTime}
                         value={startDateTime}
                         onChange={(date) =>
                             date ? setStartDateTime(moment(date)) : setStartDateTime(null)
@@ -335,6 +336,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment}) => {
                     />
 
                     <CustomInput
+                        minDate={startDateTime}
                         disabled={(appointment && appointment.isRecurringInstance) || !isOrganizer || isLoading}
                         label={"To Date & Time"}
                         type="datetime"
@@ -346,8 +348,8 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment}) => {
                     />
                 </div>
                 {(appointment && appointment.isRecurringInstance) ?
-                    <p style={{fontSize:"small"}}>Cannot edit start and end date of an recurring appointment</p> : null}
-
+                    <p style={{fontSize: "small"}}>Cannot edit start and end date of an recurring
+                        appointment</p> : null}
                 <hr/>
 
                 {/* Recurring */}

@@ -43,32 +43,32 @@ const appointmentsSlice = (set, get) => ({
 
             set({fetchedAppointments: localAppointments});
 
-            response = await appointmentAPI.getAppointments(
-                moment().startOf("day").utc().toISOString(),
-                moment().endOf("day").utc().toISOString()
-            );
-
-            localAppointments = response.data.map((appointment) => ({
-                ...appointment,
-                startDateTime: moment
-                    .utc(appointment.startDateTime)
-                    .local()
-                    .toISOString(),
-                endDateTime: moment
-                    .utc(appointment.endDateTime)
-                    .local()
-                    .toISOString(),
-                parentAppointmentStartDateTime: appointment.parentAppointmentStartDateTime ? moment
-                    .utc(appointment.parentAppointmentStartDateTime)
-                    .local()
-                    .toISOString() : null,
-                parentAppointmentEndDateTime: appointment.parentAppointmentEndDateTime ? moment
-                    .utc(appointment.parentAppointmentEndDateTime)
-                    .local()
-                    .toISOString() : null
-            }));
-
-            set({todayAppointments: localAppointments});
+            // response = await appointmentAPI.getAppointments(
+            //     moment().startOf("day").utc().toISOString(),
+            //     moment().endOf("day").utc().toISOString()
+            // );
+            //
+            // localAppointments = response.data.map((appointment) => ({
+            //     ...appointment,
+            //     startDateTime: moment
+            //         .utc(appointment.startDateTime)
+            //         .local()
+            //         .toISOString(),
+            //     endDateTime: moment
+            //         .utc(appointment.endDateTime)
+            //         .local()
+            //         .toISOString(),
+            //     parentAppointmentStartDateTime: appointment.parentAppointmentStartDateTime ? moment
+            //         .utc(appointment.parentAppointmentStartDateTime)
+            //         .local()
+            //         .toISOString() : null,
+            //     parentAppointmentEndDateTime: appointment.parentAppointmentEndDateTime ? moment
+            //         .utc(appointment.parentAppointmentEndDateTime)
+            //         .local()
+            //         .toISOString() : null
+            // }));
+            //
+            // set({todayAppointments: localAppointments});
 
         } catch (err) {
             console.error("Failed to load appointments:", err);

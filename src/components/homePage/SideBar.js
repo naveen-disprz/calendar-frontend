@@ -6,21 +6,22 @@ import useStore from "../../store/store";
 import SideBarAppointmentItem from "./SideBarAppointmentItem";
 
 const SideBar = () => {
-    const {todayAppointments} = useStore((state) => state.appointments);
+    const {fetchedAppointments} = useStore((state) => state.appointments);
+
 
     return (
         <div className={styles.sidebar}>
             <h3 className={styles.sidebarHeader}>
                 <FaListUl size={16} style={{ marginRight: "0.5rem" }} />
-                Today’s Appointments
+                Appointments List
             </h3>
             <hr/>
 
-            {todayAppointments.length === 0 ? (
-                <p className={styles.empty}>No appointments today.</p>
+            {fetchedAppointments.length === 0 ? (
+                <p className={styles.empty}>No appointments.</p>
             ) : (
                 <ul className={styles.list}>
-                    {todayAppointments
+                    {fetchedAppointments
                         .sort((a, b) => moment(a.startDateTime).diff(moment(b.startDateTime)))
                         .map((appt) => {
                             return <SideBarAppointmentItem key={appt.id} appt={appt}/>
