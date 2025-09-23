@@ -1,14 +1,13 @@
-import React, {useEffect, useRef, useState} from "react";
-import {DayPicker} from "react-day-picker";
+import React, {useRef} from "react";
 import moment from "moment";
-import "react-day-picker/dist/style.css";
 import styles from "./CustomInput.module.sass";
+import {IoCalendarOutline, IoTimeOutline} from "react-icons/io5";
 import {IoIosArrowDown} from "react-icons/io";
 
 const CustomInput = ({
                          id,
                          label,
-                         type = "text", // text | textArea | date | datetime
+                         type = "text", // text | textArea | date | time | datetime
                          value,
                          onChange,
                          placeholder,
@@ -17,22 +16,24 @@ const CustomInput = ({
                          error,
                          maxDate,
                          minDate,
+                         dateFormat = "DD MMM YYYY", // Custom format for date display
+                         timeFormat = "hh:mm A", // Custom format for time display
+                         dateTimeFormat = "DD MMM YYYY, hh:mm A", // Custom format for datetime display
                          ...rest
                      }) => {
-    const [open, setOpen] = useState(false);
-    const dropdownRef = useRef(null);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+    const dateInputRef = useRef(null);
+    const timeInputRef = useRef(null);
+
+    const formatDateForInput = (date) => {
+        if (!date) return '';
+        return moment(date).format('YYYY-MM-DD');
+    };
+
+    const formatTimeForInput = (date) => {
+        if (!date) return '';
+        return moment(date).format('HH:mm');
+    };
 
     const renderInput = () => {
         switch (type) {
@@ -52,113 +53,145 @@ const CustomInput = ({
 
             case "date":
                 return (
-                    <div className={styles.dateWrapper} ref={dropdownRef}>
-                        <div className={styles.input}
-                             style={{display: "flex", alignItems: "center", padding: 0, paddingRight: "10px"}}>
-                            <div
-                                style={{
-                                    border: "none",
-                                    outline: "none",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                }}
-                                className={`${styles.input} ${error ? styles.inputError : ""}`}
-                                onClick={() => {
-                                    if(disabled) return;
-                                    setOpen((prev) => !prev)
-                                }}
-                            >
-                                <p>{value ? moment(value).format("DD MMM YYYY") :
-                                    <p style={{color: "gray"}}>{placeholder}</p>}</p>
-                                <IoIosArrowDown/>
-
-                            </div>
+                    <div className={styles.customDateWrapper}>
+                        <div
+                            className={`${styles.dateDisplay} ${error ? styles.inputError : ""} ${disabled ? styles.disabled : ""}`}
+                            onClick={() => !disabled && dateInputRef.current?.showPicker()}
+                        >
+                            <span className={value ? styles.value : styles.placeholder}>
+                                {value ? moment(value).format(dateFormat) : placeholder || "Select date"}
+                            </span>
+                            <IoCalendarOutline className={styles.icon} />
                         </div>
-                        {open && (
-                            <div className={styles.dropdownCalendar}>
-                                <DayPicker
-                                    disabled={{
-                                        before: minDate,
-                                        after: maxDate,
-                                    }}
-                                    mode="single"
-                                    selected={value}
-                                    onSelect={(day) => {
-                                        onChange(day ? moment(day).toDate() : null);
-                                        setOpen(false);
-                                    }}
-                                />
-                            </div>
-                        )}
+                        <input
+                            ref={dateInputRef}
+                            type="date"
+                            value={formatDateForInput(value)}
+                            onChange={(e) => {
+                                const newDate = e.target.value ? moment(e.target.value).toDate() : null;
+                                onChange(newDate);
+                            }}
+                            disabled={disabled}
+                            min={minDate ? formatDateForInput(minDate) : undefined}
+                            max={maxDate ? formatDateForInput(maxDate) : undefined}
+                            className={styles.hiddenInput}
+                            tabIndex={-1}
+                            aria-hidden="true"
+                        />
+                    </div>
+                );
+
+            case "time":
+                return (
+                    <div className={styles.customTimeWrapper}>
+                        <div
+                            className={`${styles.timeDisplay} ${error ? styles.inputError : ""} ${disabled ? styles.disabled : ""}`}
+                            onClick={() => !disabled && timeInputRef.current?.showPicker()}
+                        >
+                            <span className={value ? styles.value : styles.placeholder}>
+                                {value ? moment(value).format(timeFormat) : placeholder || "Select time"}
+                            </span>
+                            <IoTimeOutline className={styles.icon} />
+                        </div>
+                        <input
+                            ref={timeInputRef}
+                            type="time"
+                            value={formatTimeForInput(value)}
+                            onChange={(e) => {
+                                if (e.target.value) {
+                                    const [hours, minutes] = e.target.value.split(':');
+                                    // Create a date object with today's date and the selected time
+                                    const newTime = moment()
+                                        .hour(parseInt(hours, 10))
+                                        .minute(parseInt(minutes, 10))
+                                        .second(0)
+                                        .toDate();
+                                    onChange(newTime);
+                                } else {
+                                    onChange(null);
+                                }
+                            }}
+                            disabled={disabled}
+                            className={styles.hiddenInput}
+                            tabIndex={-1}
+                            aria-hidden="true"
+                        />
                     </div>
                 );
 
             case "datetime":
                 return (
-                    <div className={styles.dateWrapper} ref={dropdownRef}>
-                        <div className={styles.input}
-                             style={{display: "flex", alignItems: "center", padding: 0, paddingRight: "10px"}}>
+                    <div className={styles.customDateTimeWrapper}>
+                        <div
+                            className={`${styles.dateTimeDisplay} ${error ? styles.inputError : ""} ${disabled ? styles.disabled : ""}`}
+                        >
                             <div
-                                className={`${styles.input} ${error ? styles.inputError : ""}`}
-                                style={{
-                                    border: "none",
-                                    outline: "none",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                }}
-                                onClick={() => {
-                                    if(disabled) return;
-                                    setOpen((prev) => !prev)
-                                }}
+                                className={styles.dateSection}
+                                onClick={() => !disabled && dateInputRef.current?.showPicker()}
                             >
-                                <p>{value ? moment(value).format("DD MMM YYYY hh:mm A") :
-                                    <p style={{color: "gray"}}>{placeholder}</p>}</p>
-                                <IoIosArrowDown/>
+                                <span className={value ? styles.value : styles.placeholder}>
+                                    {value ? moment(value).format("DD MMM YYYY") : "Select date"}
+                                </span>
+                                <IoCalendarOutline className={styles.icon} />
                             </div>
-
+                            <div
+                                className={`${styles.timeSection} ${!value ? styles.disabled : ''}`}
+                                onClick={() => !disabled && value && timeInputRef.current?.showPicker()}
+                            >
+                                <span className={value ? styles.value : styles.placeholder}>
+                                    {value ? moment(value).format("hh:mm A") : "Time"}
+                                </span>
+                                <IoIosArrowDown className={styles.icon} />
+                            </div>
                         </div>
-                        {open && (
-                            <div className={styles.dropdownCalendar}>
-                                <DayPicker
-                                    mode="single"
-                                    disabled={{
-                                        before: minDate,
-                                        after: maxDate,
-                                    }}
-                                    selected={value}
-                                    onSelect={(day) => {
-                                        if (!day) {
-                                            onChange(null);
-                                            return;
-                                        }
-                                        // Preserve time if value already exists
-                                        const current = moment(value || new Date());
-                                        const updated = moment(day)
-                                            .hour(current.hour())
-                                            .minute(current.minute())
-                                            .toDate();
-                                        onChange(updated);
-                                        // setOpen(false);
-                                    }}
-                                />
-                                <input
-                                    type="time"
-                                    value={value ? moment(value).format("HH:mm") : ""}
-                                    onChange={(e) => {
-                                        if (!value) return;
-                                        const [h, m] = e.target.value.split(":");
-                                        const updated = moment(value)
-                                            .hour(parseInt(h, 10))
-                                            .minute(parseInt(m, 10))
-                                            .toDate();
-                                        onChange(updated);
-                                    }}
-                                    className={styles.input}
-                                />
-                            </div>
-                        )}
+
+                        <input
+                            ref={dateInputRef}
+                            type="date"
+                            value={formatDateForInput(value)}
+                            onChange={(e) => {
+                                if (e.target.value) {
+                                    const newDate = moment(e.target.value);
+                                    if (value) {
+                                        // Preserve existing time
+                                        newDate.hour(moment(value).hour());
+                                        newDate.minute(moment(value).minute());
+                                    } else {
+                                        // Set default time to 12:00 PM
+                                        newDate.hour(12).minute(0);
+                                    }
+                                    onChange(newDate.toDate());
+                                } else {
+                                    onChange(null);
+                                }
+                            }}
+                            disabled={disabled}
+                            min={minDate ? formatDateForInput(minDate) : undefined}
+                            max={maxDate ? formatDateForInput(maxDate) : undefined}
+                            className={styles.hiddenInput}
+                            tabIndex={-1}
+                            aria-hidden="true"
+                        />
+
+                        <input
+                            ref={timeInputRef}
+                            type="time"
+                            value={formatTimeForInput(value)}
+                            onChange={(e) => {
+                                if (e.target.value && value) {
+                                    const [hours, minutes] = e.target.value.split(':');
+                                    const newDateTime = moment(value)
+                                        .hour(parseInt(hours, 10))
+                                        .minute(parseInt(minutes, 10))
+                                        .toDate();
+                                    onChange(newDateTime);
+                                }
+                            }}
+                            disabled={disabled || !value}
+                            className={styles.hiddenInput}
+                            tabIndex={-1}
+                            aria-hidden="true"
+                        />
                     </div>
                 );
 

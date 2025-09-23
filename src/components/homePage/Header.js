@@ -5,9 +5,11 @@ import {MdDarkMode} from "react-icons/md";
 import {MdLightMode} from "react-icons/md";
 import {useAuth} from "../../hooks/useAuth";
 import {HiOutlineLogout} from "react-icons/hi";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 
-const Header = () => {
+
+const Header = ({onMenuClick}) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const {user, logout} = useAuth();
@@ -27,7 +29,12 @@ const Header = () => {
 
     return (
         <header className={styles.header}>
-            <h2 className={styles.projectName}>Calendar</h2>
+            <div className={styles.left}>
+                <button className={styles.hamburger} onClick={onMenuClick}>
+                    <GiHamburgerMenu size={22} />
+                </button>
+                <h2 className={styles.projectName}>Calendar</h2>
+            </div>
             <div className={styles.actions}>
                 <button onClick={toggleDarkMode} className={styles.toggleButton}>
                     {isDarkMode ? <MdLightMode size={22}/> : <MdDarkMode size={22}/>}

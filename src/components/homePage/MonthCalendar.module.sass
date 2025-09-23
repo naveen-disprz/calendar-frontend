@@ -1,3 +1,5 @@
+@use "../../styles/variables" as *
+
 .monthCalendar
   display: flex
   flex-direction: column
@@ -15,27 +17,38 @@
 .weekday
   padding: 0.25rem
 
-.daysGrid
+.weeksContainer
   flex: 1
-  display: grid
-  grid-template-columns: repeat(7, 1fr)
-  /* gridTemplateRows is set dynamically via inline style from React */
+  display: flex
+  flex-direction: column
   border-left: 1px solid #eee
   border-top: 1px solid #eee
-  overflow: hidden
+  overflow-y: auto
+
+.weekRow
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  position: relative
+  min-height: 100px
+  flex: 1
+  transition: min-height 0.3s ease
 
 .dayCell
   border-right: 1px solid #eee
   border-bottom: 1px solid #eee
-  padding: 6px
-  display: flex
-  flex-direction: column
-  min-height: 0
+  padding: 4px
+  position: relative
+  cursor: pointer
+
+  &:hover
+    background: rgba(0, 0, 0, 0.02)
 
 .dateNumber
-  font-size: 0.85rem
+  font-size: 0.75rem
   font-weight: 500
-  margin-bottom: 4px
+  margin-bottom: 2px
+  position: relative
+  z-index: 1
 
 .today
   background: #eaf4ff
@@ -44,29 +57,88 @@
   color: #aaa
   background: #fafafa
 
-.events
-  display: flex
-  flex-direction: column
-  gap: 4px
-  margin-top: 4px
-  overflow: hidden
+.pastDay
+  opacity: 0.5
 
-.event
-  cursor: pointer
-  font-size: 0.75rem
-  padding: 4px 6px
+// Multi-day event blocks
+.weekEvent
+  position: absolute
+  height: 20px
   border-radius: 4px
-  color: white
+  padding: 1px 4px
+  cursor: pointer
+  z-index: 2
+  filter: brightness(120%)
+  box-sizing: border-box
+  display: flex
+  align-items: center
+  overflow: hidden
+  border: 1px solid rgba(0, 0, 0, 0.1)
+  transition: all 0.2s ease
+
+  &:hover
+    filter: brightness(110%)
+    z-index: 10
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15)
+
+.eventText
+  font-size: 0.65rem
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+  font-weight: 500
 
-.more
-  font-size: 0.7rem
+// More indicator
+.moreIndicator
+  position: absolute
+  height: 18px
+  padding: 0 4px
+  display: flex
+  align-items: center
+  justify-content: center
+  font-size: 0.65rem
   color: #1976d2
-  margin-top: 2px
   cursor: pointer
+  font-weight: 500
+  z-index: 3
 
-.pastDay
-  opacity: 0.5
-  pointer-events: none
+  &:hover
+    text-decoration: underline
+    background: rgba(25, 118, 210, 0.05)
+    border-radius: 4px
+
+.collapseIndicator
+  position: absolute
+  height: 18px
+  display: flex
+  align-items: center
+  justify-content: center
+  font-size: 0.65rem
+  color: #666
+  cursor: pointer
+  background: rgba(0, 0, 0, 0.03)
+  border-radius: 4px
+  z-index: 3
+
+  &:hover
+    background: rgba(0, 0, 0, 0.06)
+    text-decoration: underline
+
+// 📱 Mobile adjustments
+@media (max-width: 768px)
+  .weekRow
+    min-height: 80px
+
+  .dateNumber
+    font-size: 0.6rem
+
+  .weekEvent
+    height: 16px
+    padding: 0px 2px
+
+  .eventText
+    font-size: 0.55rem
+
+  .moreIndicator, .collapseIndicator
+    font-size: 0.55rem
+    height: 16px

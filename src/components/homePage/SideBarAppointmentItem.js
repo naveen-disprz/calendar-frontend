@@ -18,20 +18,23 @@ const SideBarAppointmentItem = ({appt}) => {
         status = "Ongoing";
     }
 
-    return (<div key={appt.id} className={styles.item} onClick={() => setIsEditAppointmentModalVisible(true)}>
-        {isEditAppointmentModalVisible && <CreateAppointmentModal open={isEditAppointmentModalVisible}
-                                                                  appointment={appt}
-                                                                  onClose={() => {
-                                                                      console.log("Hellow")
-                                                                      setIsEditAppointmentModalVisible(false)
-                                                                  }}
-                                                                  onSave={() => {
-                                                                      console.log("Hellow1")
-                                                                      setIsEditAppointmentModalVisible(false)
-                                                                  }}/>}
+    return (<>
+            {isEditAppointmentModalVisible && <CreateAppointmentModal open={isEditAppointmentModalVisible}
+                                                                      appointment={appt}
+                                                                      onClose={() => {
+                                                                          console.log("Hellow")
+                                                                          setIsEditAppointmentModalVisible(false)
+                                                                      }}
+                                                                      onSave={() => {
+                                                                          console.log("Hellow1")
+                                                                          setIsEditAppointmentModalVisible(false)
+                                                                      }}/>}
+        <div key={appt.id} className={styles.item} onClick={(e) => {
+        setIsEditAppointmentModalVisible(true)
+    }}>
         <div
             className={styles.coloredBlock}
-            style={{backgroundColor: appt.appointmentType.color}}
+            style={{backgroundColor: appt.appointmentType?.color}}
         />
 
         {/* Status */}
@@ -42,7 +45,7 @@ const SideBarAppointmentItem = ({appt}) => {
       </span>
         {/* Main Info */}
         <div className={styles.main}>
-            <p className={styles.title}>{appt.title || "Untitled"}</p>
+            <p className={styles.title}>{appt.title || "(No title)"}</p>
             <div style={{display: "flex", justifyContent: "space-around", alignItems:"center"}}>
                 <div>
                     <p className={styles.time}>{moment(appt.startDateTime).format("DD MMM")}</p>
@@ -73,7 +76,9 @@ const SideBarAppointmentItem = ({appt}) => {
             {appt.organizerName && (<div className={styles.organizer}>Created
                 by {appt.organizerId === user.id ? "You" : appt.organizerName}</div>)}
         </div>
-    </div>);
+    </div>
+        </>
+        );
 };
 
 export default SideBarAppointmentItem;

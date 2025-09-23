@@ -12,7 +12,6 @@ const Calendar = ({variant = "day"}) => {
     const [isCreateAppointmentModalVisible, setIsCreateAppointmentModalVisible] = useState(false)
     const [selectedBlockDate, setSelectedBlockDate] = useState(null)
 
-
     const {fetchedAppointments, selectedFromDate, selectedToDate} = useStore(
         (state) => state.appointments
     );
@@ -32,11 +31,37 @@ const Calendar = ({variant = "day"}) => {
         return <MonthCalendar selectedDate={selectedFromDate}/>;
     }
 
+    // Filter appointments for multi-day handling
+    const getAppointmentsForDay = (day) => {
+        return fetchedAppointments.filter((event) => {
+            const eventStart = moment(event.startDateTime);
+            const eventEnd = moment(event.endDateTime);
+            const dayStart = day.clone().startOf('day');
+            const dayEnd = day.clone().endOf('day');
+
+            // Include if:
+            // 1. Event starts on this day
+            // 2. Event ends on this day
+            // 3. Event spans across this day
+            return (
+                eventStart.isBetween(dayStart, dayEnd, null, '[]') ||
+                eventEnd.isBetween(dayStart, dayEnd, null, '[]') ||
+                (eventStart.isBefore(dayStart) && eventEnd.isAfter(dayEnd))
+            );
+        });
+    };
+
     // Render appointments (different for day vs week)
     const renderEvents = () => {
         if (variant === "day") {
-            return fetchedAppointments.map((event, index) => (
-                <DayAppointmentItem event={event} index={index} key={index}/>
+            const dayEvents = getAppointmentsForDay(selectedFromDate);
+            return dayEvents.map((event, index) => (
+                <DayAppointmentItem
+                    event={event}
+                    index={index}
+                    key={`${event.id}-${selectedFromDate.format('YYYY-MM-DD')}-${index}`}
+                    currentDay={selectedFromDate}
+                />
             ));
         }
 
@@ -51,22 +76,25 @@ const Calendar = ({variant = "day"}) => {
             return (
                 <div className={styles.weekColumns}>
                     {weekDays.map((day, dayIndex) => {
-                        const dayEvents = fetchedAppointments.filter((event) =>
-                            moment(event.startDateTime).isSame(day, "day")
-                        );
+                        const dayEvents = getAppointmentsForDay(day);
 
                         return (
                             <div className={styles.weekColumn} key={dayIndex}>
                                 <div className={styles.weekHeader}>
-                                    <p style={day.isSame(moment(),"day") ? {color:"#4f46e5"} : {}}>{day.format("ddd")}</p>
-                                    <span style={day.isSame(moment(),"day") ? {color: "#4f46e5"} : {}}>{day.format("D")}</span>
+                                    <p style={day.isSame(moment(),"day") ? {color:"#4f46e5"} : {}}>
+                                        {day.format("ddd")}
+                                    </p>
+                                    <span style={day.isSame(moment(),"day") ? {color: "#4f46e5"} : {}}>
+                                        {day.format("D")}
+                                    </span>
                                 </div>
                                 {dayEvents.map((event, idx) => (
                                     <DayAppointmentItem
                                         event={event}
                                         index={idx}
-                                        key={idx}
+                                        key={`${event.id}-${day.format('YYYY-MM-DD')}-${idx}`}
                                         isWeekView
+                                        currentDay={day}
                                     />
                                 ))}
                             </div>
@@ -83,10 +111,14 @@ const Calendar = ({variant = "day"}) => {
                 variant === "week" ? styles.weekCalendar : styles.dayCalendar
             }`}
         >
-            {isCreateAppointmentModalVisible ? <CreateAppointmentModal defaultDate={selectedBlockDate}
-                                                                       onClose={() => setIsCreateAppointmentModalVisible(false)}
-                                     onSave={() => setIsCreateAppointmentModalVisible(false)}
-                                     open={isCreateAppointmentModalVisible}/> : null}
+            {isCreateAppointmentModalVisible ? (
+                <CreateAppointmentModal
+                    defaultDate={selectedBlockDate}
+                    onClose={() => setIsCreateAppointmentModalVisible(false)}
+                    onSave={() => setIsCreateAppointmentModalVisible(false)}
+                    open={isCreateAppointmentModalVisible}
+                />
+            ) : null}
 
             {/* Red Now Line */}
             <div className={styles.nowLine} style={variant === "day" ? {top: nowLineTop} : {top: nowLineTop + 23}}>

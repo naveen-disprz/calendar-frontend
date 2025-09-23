@@ -8,6 +8,9 @@
   font-size: 0.9rem
   font-weight: 500
   color: #444
+  @media (max-width: 768px)
+    font-size: 0.8rem
+
 
 .input, .textarea
   padding: 0.5rem 0.75rem
@@ -20,6 +23,11 @@
     outline: none
     border-color: #007bff
     box-shadow: 0 0 0 2px rgba(0,123,255,0.1)
+  @media (max-width: 768px)
+    padding: 0.25rem 0.5rem
+    font-size: 0.85rem
+
+
 
 .textarea
   resize: none
@@ -29,6 +37,17 @@
   display: flex
   align-items: center
   position: relative
+
+.datetimeWrapper
+  display: flex
+  gap: 8px
+  width: 100%
+
+  input
+    flex: 1
+
+  @media (max-width: 768px)
+    flex-direction: column
 
 .dropdownCalendar
   position: absolute
@@ -40,3 +59,124 @@
   border-radius: 8px
   box-shadow: 0 4px 12px rgba(0,0,0,0.15)
   padding: 0.5rem
+
+.customDateWrapper, .customDateTimeWrapper
+  position: relative
+  width: 100%
+
+.hiddenInput
+  position: absolute
+  opacity: 0
+  pointer-events: none
+  width: 0
+  height: 0
+
+.dateDisplay, .dateTimeDisplay
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 10px 12px
+  border: 1px solid #ddd
+  border-radius: 4px
+  background: white
+  cursor: pointer
+  transition: all 0.2s ease
+  min-height: 42px
+
+  &:hover:not(.disabled)
+    border-color: #999
+    background: #fafafa
+
+  &.disabled
+    opacity: 0.6
+    cursor: not-allowed
+    background: #f5f5f5
+
+  &.inputError
+    border-color: #ff4444
+
+  .value
+    color: #333
+    font-size: 14px
+
+  .placeholder
+    color: #999
+    font-size: 14px
+
+  .icon
+    color: #666
+    font-size: 18px
+    margin-left: 8px
+.customTimeWrapper
+  position: relative
+  width: 100%
+
+.timeDisplay
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 10px 12px
+  border: 1px solid #ddd
+  border-radius: 4px
+  background: white
+  cursor: pointer
+  transition: all 0.2s ease
+  min-height: 42px
+
+  &:hover:not(.disabled)
+    border-color: #999
+    background: #fafafa
+
+  &.disabled
+    opacity: 0.6
+    cursor: not-allowed
+    background: #f5f5f5
+
+  &.inputError
+    border-color: #ff4444
+
+  .value
+    color: #333
+    font-size: 14px
+
+  .placeholder
+    color: #999
+    font-size: 14px
+
+  .icon
+    color: #666
+    font-size: 18px
+    margin-left: 8px
+
+.dateTimeDisplay
+  padding: 0
+
+  .dateSection, .timeSection
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 10px 12px
+    flex: 1
+    cursor: pointer
+    transition: background 0.2s ease
+
+    &:hover:not(.disabled)
+      background: #fafafa
+
+    &.disabled
+      opacity: 0.5
+      cursor: not-allowed
+
+  .dateSection
+    border-right: 1px solid #ddd
+
+  @media (max-width: 768px)
+    flex-direction: column
+
+    .dateSection
+      border-right: none
+      border-bottom: 1px solid #ddd
+      width: 100%
+
+    .timeSection
+      width: 100%

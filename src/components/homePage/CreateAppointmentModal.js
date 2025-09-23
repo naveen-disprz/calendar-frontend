@@ -34,7 +34,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
     const [appointmentType, setAppointmentType] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [startDateTime, setStartDateTime] = useState(moment(defaultDate));
-    const [endDateTime, setEndDateTime] = useState(defaultDate ? moment(defaultDate) : null);
+    const [endDateTime, setEndDateTime] = useState(defaultDate ? moment(defaultDate).add(30, "minutes") : null);
 
     const [isRecurring, setIsRecurring] = useState(false);
     const [frequency, setFrequency] = useState("DAILY");
@@ -52,13 +52,14 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
             setDescription(appointment.description || "");
             setLocation(appointment.location || "");
             setAppointmentType(
-                appointmentTypes.find((t) => t.id === appointment.appointmentType.id) ||
+                appointmentTypes.find((t) => t.id === appointment.appointmentType?.id) ||
                 null
             );
             setParticipants(appointment.attendeeIds || []);
 
-            setStartDateTime(moment.utc(appointment.startDateTime).local());
-            setEndDateTime(moment.utc(appointment.endDateTime).local());
+            setStartDateTime(moment(appointment.startDateTime));
+            setEndDateTime(moment(appointment.endDateTime));
+
 
             if (appointment.recurrence) {
                 setIsRecurring(true);
@@ -67,7 +68,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
                 setDaysOfMonthSelected(appointment.recurrence.daysOfMonth || []);
                 setRecurrenceEndDate(
                     appointment.recurrence.endDate
-                        ? moment.utc(appointment.recurrence.endDate).local()
+                        ? moment(appointment.recurrence.endDate)
                         : null
                 );
             } else {
@@ -81,7 +82,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
             setAppointmentType(null);
             setParticipants([]);
             setStartDateTime(moment(defaultDate));
-            setEndDateTime(defaultDate ? moment(defaultDate) : null);
+            setEndDateTime(defaultDate ? moment(defaultDate).add(30, "minutes") : null);
             setIsRecurring(false);
             setFrequency("DAILY");
             setDaysOfWeekSelected([]);
@@ -126,22 +127,27 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
     };
 
     const handleSave = async () => {
-        if (!title || title.trim() === "") {
-            toast.warn("Title is required.");
-            return;
-        }
+        // if (!title || title.trim() === "") {
+        //     toast.warn("Title is required.");
+        //     return;
+        // }
 
-        if (!appointmentType) {
-            toast.warn("Appointment type is required.");
-            return;
-        }
+        // if (!appointmentType) {
+        //     toast.warn("Appointment type is required.");
+        //     return;
+        // }
 
         if (!startDateTime || !endDateTime) {
             toast.warn("Start date and end date are required.");
             return;
         }
 
-        if (startDateTime.isSameOrAfter(endDateTime)) {
+        console.log(startDateTime.format());
+        console.log(endDateTime.format());
+        console.log(startDateTime.isSameOrAfter(endDateTime, "minutes"));
+
+
+        if (startDateTime.isSameOrAfter(endDateTime, "minutes")) {
             toast.warn("End date must be after start date.");
             return;
         }
@@ -160,15 +166,22 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
                 );
                 return;
             }
+            console.log(endDateTime)
+            console.log(startDateTime)
+
+            if (endDateTime.isAfter(startDateTime, "days")) {
+                toast.warn("You can't create multi day appointment with recurrence.");
+                return;
+            }
         }
 
         const payload = {
             title,
             description,
             location,
-            startDateTime: (appointment && appointment.isRecurringInstance) ? moment(appointment.parentAppointmentStartDateTime).clone().utc().toISOString() : startDateTime.clone().utc().toISOString(),
-            endDateTime: (appointment && appointment.isRecurringInstance) ? moment(appointment.parentAppointmentEndDateTime).clone().utc().toISOString() : endDateTime.clone().utc().toISOString(),
-            appointmentTypeId: appointmentType?.id || "",
+            startDateTime: (appointment && appointment.isRecurringInstance) ? moment(appointment.parentAppointmentStartDateTime).clone().hour(startDateTime.hour()).minute(startDateTime.minute()).second(startDateTime.second()).utc().toISOString() : startDateTime.clone().utc().toISOString(),
+            endDateTime: (appointment && appointment.isRecurringInstance) ? moment(appointment.parentAppointmentEndDateTime).clone().hour(endDateTime.hour()).minute(endDateTime.minute()).second(endDateTime.second()).utc().toISOString() : endDateTime.clone().utc().toISOString(),
+            appointmentTypeId: appointmentType?.id || null,
             attendeeIds: participants,
             recurrence: isRecurring
                 ? {
@@ -324,9 +337,9 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
                 {/* Start & End datetime */}
                 <div className={styles.row}>
                     <CustomInput
-                        disabled={(appointment && appointment.isRecurringInstance) || !isOrganizer || isLoading}
+                        disabled={!isOrganizer || isLoading}
                         label={"From Date & Time"}
-                        type="datetime"
+                        type={(appointment && appointment.isRecurringInstance) ? "time" : "datetime"}
                         placeholder={"Select appointment start date"}
                         maxDate={endDateTime}
                         value={startDateTime}
@@ -337,9 +350,9 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
 
                     <CustomInput
                         minDate={startDateTime}
-                        disabled={(appointment && appointment.isRecurringInstance) || !isOrganizer || isLoading}
+                        disabled={!isOrganizer || isLoading}
                         label={"To Date & Time"}
-                        type="datetime"
+                        type={(appointment && appointment.isRecurringInstance) ? "time" : "datetime"}
                         placeholder={"Select appointment end date"}
                         value={endDateTime}
                         onChange={(date) =>
@@ -348,8 +361,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
                     />
                 </div>
                 {(appointment && appointment.isRecurringInstance) ?
-                    <p style={{fontSize: "small"}}>Cannot edit start and end date of an recurring
-                        appointment</p> : null}
+                    <p style={{fontSize: "small"}}>This is a recurring appointment</p> : null}
                 <hr/>
 
                 {/* Recurring */}
@@ -451,7 +463,7 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
                                                 toast.error("Start date and end date is required to check availability");
                                                 return;
                                             }
-                                            if (!participants.some(p => p.id !== user.id)) {
+                                            if (!(participants.some(p => p === user.id))) {
                                                 toast.promise(async () => {
                                                     const response = await attendeeAPI.checkAvailability({
                                                         startDateTime: startDateTime.clone().utc().toISOString(),
@@ -463,8 +475,8 @@ const CreateAppointmentModal = ({open, onClose, onSave, appointment, defaultDate
                                                         throw new Error("Not available")
                                                     }
                                                 }, {
-                                                    pending: "Checking " + user.firstName + " availability",
-                                                    success: "Added " + user.firstName,
+                                                    // pending: "Checking " + user.firstName + " availability",
+                                                    // success: "Added " + user.firstName,
                                                     error: user.firstName + " is busy on the time range",
                                                 }).then(() => {
                                                     toggleParticipant(user.id)

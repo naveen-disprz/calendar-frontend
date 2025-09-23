@@ -21,6 +21,7 @@
   height: 60px
   border-bottom: 1px solid #e0e0e0
   cursor: pointer
+
   &:hover
     background-color: #f8f8f8
 
@@ -31,6 +32,9 @@
   top: 21px
   font-size: 12px
   color: #333
+  @media (max-width: 768px)
+    left: 2px
+    font-size: 9px
 
 .hourLine
   position: absolute
@@ -38,6 +42,8 @@
   right: 0
   top: 50%
   border-top: 1px solid #8f8f8f
+  @media (max-width: 768px)
+    left: 40px
 
 .halfHourLine
   position: absolute
@@ -45,6 +51,8 @@
   right: 0
   top: 50%
   border-top: 1px solid #ccc
+  @media (max-width: 768px)
+    left: 40px
 
 // ---- Day Calendar ----
 .dayCalendar
@@ -64,9 +72,9 @@
   top: 0
   left: 60px
   right: 0
-  // ❌ remove bottom: 0 (this was forcing it to fit in the viewport)
   height: calc(49 * 60px)
-// ✅ match total time grid height (49 slots * 60px)
+  @media (max-width: 768px)
+    left: 40px
 
 .weekColumn
   flex: 1
@@ -80,3 +88,7 @@
   padding: 0.25rem 0
   border-bottom: 1px solid #ddd
   background-color: white
+  @media (max-width: 768px)
+    p, span
+      font-size: 12px
+      padding: 0.13rem 0

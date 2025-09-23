@@ -38,6 +38,9 @@
   gap: 20px
   //justify-content: space-between
   align-items: center
+  @media (max-width: 768px)
+    span
+      font-size: 14px
 
 .daySelector
   display: flex
@@ -63,6 +66,9 @@
 .participants
   gap: 0.5rem
   width: 100%
+  @media (max-width: 768px)
+    p
+      font-size: 14px
 
 .userList
   margin-top: 1rem
@@ -70,6 +76,9 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr))
   gap: 0.5rem
   max-height: 300px
+  @media (max-width: 768px)
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr))
+
 
 .selectedUser
   background: #e6f0ff
@@ -89,6 +98,8 @@
   cursor: pointer
   font-size: 0.95rem
   transition: background 0.2s
+  @media (max-width: 768px)
+    font-size: 12px
 
 .deleteButton
   padding: 0.5rem 0.75rem
@@ -136,6 +147,10 @@
   transition: all 0.2s
   &:hover
     background: #f7f7f7
+  @media (max-width: 768px)
+    font-size: 12px
+    padding: 0.25rem
+
 
 .userAvatar
   width: 36px
@@ -147,6 +162,9 @@
   align-items: center
   justify-content: center
   font-weight: bold
+  @media (max-width: 768px)
+    width: 30px
+    height: 30px
 
 .userName
   flex: 1

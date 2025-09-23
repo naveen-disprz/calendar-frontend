@@ -6,6 +6,7 @@ import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import {Bounce, ToastContainer} from "react-toastify";
+import styles from "react-day-picker/style.css";
 
 // Protected Route component
 const ProtectedRoute = ({children}) => {
@@ -38,6 +39,8 @@ function App() {
                     newestOnTop={false}
                     closeOnClick={false}
                     rtl={false}
+                    className={"toastText"}
+                    style={{"fontSize": "12px", zIndex: 999999}}
                     pauseOnFocusLoss
                     draggable
                     pauseOnHover
